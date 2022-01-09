@@ -15,8 +15,8 @@ public interface PlayerService {
 	int getCount(String name, String title, Race race, Profession profession
 			, Long after, Long before, Boolean banned, Integer minExperience
 			, Integer maxExperience, Integer minLevel, Integer maxLevel);
-	Player getPlayerById(long id) throws PlayerNotFoundException;
+	Player getPlayerById(Long id) throws PlayerNotFoundException, PlayerValidationException;
 	Player create(Player player) throws PlayerValidationException;
-	Player update(Player player, long id) throws PlayerValidationException, PlayerNotFoundException;
-	void delete(long id) throws PlayerNotFoundException;
+	Player update(Player player, Long id) throws PlayerValidationException, PlayerNotFoundException;
+	void delete(long id) throws PlayerNotFoundException, PlayerValidationException;
 }
