@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,9 +25,13 @@ import com.game.service.PlayerValidationException;
 
 @RestController
 public class PlayerController {
-	
+
+	private final PlayerService service;
+
 	@Autowired
-	private PlayerService service;
+	public PlayerController(PlayerService service) {
+		this.service = service;
+	}
 	
 	@GetMapping("/rest/players")
 	public @ResponseBody List<Player> getPlayersList(@RequestParam(value = "name", required = false) String name, @RequestParam(value = "title", required = false) String title
@@ -36,7 +41,6 @@ public class PlayerController {
 			, @RequestParam(value = "maxExperience", required = false) Integer maxExperience, @RequestParam(value = "minLevel", required = false) Integer minLevel
 			, @RequestParam(value = "maxLevel", required = false) Integer maxLevel, @RequestParam(value = "order", required = false) PlayerOrder order
 			, @RequestParam(value = "pageNumber", required = false) Integer pageNumber, @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-		
 		return service.getPlayers(name, title, race, profession, after, before, banned, minExperience, maxExperience, minLevel, maxLevel, order, pageNumber, pageSize);
 	}
 	
@@ -52,7 +56,7 @@ public class PlayerController {
 	
 	@PostMapping("/rest/players")
 	public @ResponseBody Player createPlayer(@RequestBody Player player) {
-		Player createdPlayer = null;
+		Player createdPlayer;
 		try {
 			createdPlayer = service.create(player);
 		}
@@ -64,14 +68,14 @@ public class PlayerController {
 	
 	@GetMapping("/rest/players/{id}")
 	public @ResponseBody Player getPlayer(@PathVariable("id") Long id) {
-		Player player = null;
+		Player player;
 		try {
 			player = service.getPlayerById(id);
 		}
 		catch (PlayerNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-		catch (Exception e) {
+		catch (PlayerValidationException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
 		return player;
@@ -79,21 +83,21 @@ public class PlayerController {
 	
 	@PostMapping("/rest/players/{id}")
 	public @ResponseBody Player updatePlayer(@PathVariable("id") Long id, @RequestBody Player player) {
-		player.setId(id);
-		Player updatedPlayer = null;
+		Player updatedPlayer;
 		try {
 			updatedPlayer = service.update(player, id);
 		}
 		catch (PlayerNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-		catch (Exception e) {
+		catch (PlayerValidationException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
 		return updatedPlayer;
 	}
 	
 	@DeleteMapping("/rest/players/{id}")
+	@ResponseStatus(HttpStatus.OK)
 	public void deletePlayer(@PathVariable("id") Long id) {
 		try {
 			service.delete(id);
@@ -101,7 +105,7 @@ public class PlayerController {
 		catch (PlayerNotFoundException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
-		catch (Exception e) {
+		catch (PlayerValidationException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
 	}
