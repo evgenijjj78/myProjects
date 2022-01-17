@@ -1,4 +1,4 @@
-package com.game.service;
+package com.game.service.exceptions;
 
 public class PlayerValidationException extends Exception {
 	public PlayerValidationException() {}

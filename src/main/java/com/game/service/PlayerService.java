@@ -6,6 +6,8 @@ import com.game.controller.PlayerOrder;
 import com.game.entity.Player;
 import com.game.entity.Profession;
 import com.game.entity.Race;
+import com.game.service.exceptions.PlayerNotFoundException;
+import com.game.service.exceptions.PlayerValidationException;
 
 public interface PlayerService {
 	List<Player> getPlayers(String name, String title, Race race, Profession profession
